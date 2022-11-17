@@ -105,7 +105,7 @@ def create_model(
         # TODO
         #tf.keras.applications.resnet50.ResNet50(include_top=True, weights='imagenet', input_tensor=None, input_shape=None, pooling=None, classes=1000, **kwargs)
         base_model = keras.applications.resnet50.ResNet50(include_top=False, weights=weights, pooling='avg', input_shape=input_shape)
-        #base_model.trainable = False
+        base_model.trainable = False
         
         x=base_model(x)
         
