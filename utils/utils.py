@@ -1,7 +1,11 @@
 import os
 import yaml
-import keras
+from yaml.loader import SafeLoader
+import tensorflow as tf
+import numpy as np
 
+from keras.preprocessing.image import load_img
+from keras.preprocessing.image import img_to_array
 
 
 def validate_config(config):
@@ -160,7 +164,5 @@ def predict_from_folder(folder, model, input_size, class_names):
             vv=dirpath.split('/')
             vv=vv[-1]
             labels.append(vv)
-
-    keras.utils.load_img()
 
     return predictions, labels

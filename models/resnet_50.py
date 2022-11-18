@@ -119,7 +119,7 @@ def create_model(
         # Assign it to `outputs` variable
         # TODO
         #outputs = None
-        x2 = keras.layers.Dense(classes, kernel_regularizer=regularizers.l2(0.0001), activation='softmax')
+        x2 = keras.layers.Dense(classes, kernel_regularizer=regularizers.l2(0.0005), activation='softmax')
         outputs = x2(x)
 
         # Now you have all the layers in place, create a new model

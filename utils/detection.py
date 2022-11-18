@@ -2,12 +2,24 @@ from detectron2 import model_zoo
 from detectron2.config import get_cfg
 from detectron2.engine.defaults import DefaultPredictor
 
+import numpy as np
+import os, json, cv2, random
+from google.colab.patches import cv2_imshow
+
+from detectron2 import model_zoo
+from detectron2.engine import DefaultPredictor
+from detectron2.config import get_cfg
+from detectron2.utils.visualizer import Visualizer
+from detectron2.data import MetadataCatalog, DatasetCatalog
+
 # The chosen detector model is "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"
 # because this particular model has a good balance between accuracy and speed.
 # You can check the following Colab notebook with examples on how to run
 # Detectron2 models
 # https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5.
 # Assign the loaded detection model to global variable DET_MODEL
+
+#create a detectron2 config and a detectron2 DefaultPredictor to run inference on this images
 cfg = get_cfg()
 cfg.merge_from_file(
     model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml")
@@ -60,5 +72,30 @@ def get_vehicle_coordinates(img):
     """
     # TODO
     box_coordinates = None
+
+    outputs = DET_MODEL(img)
+
+    interest_classes=[2,7]
+    classes=outputs["instances"].pred_classes.cpu().numpy()
+    boxes=outputs["instances"].pred_boxes.tensor.cpu().numpy()
+    print(classes)
+    print(boxes)
+
+    
+ #select boxes of interest_clases
+    n=classes.shape[0]
+    interest_boxes=[]
+    for i in range(n):
+        if classes[i] in interest_classes:
+            interest_boxes.append(boxes[i,:])
+    
+    interest_images=[]
+    for bbox in interest_boxes:
+        x0,y0,x1,y1=bbox.astype(int)
+        area=(y1-y0)*(x1-x0)
+        
+        #print(x0,y0,x1,y1)
+        interest_image= img[y0:y1, x0:x1,:]
+        interest_images.append(interest_image)
 
     return box_coordinates
