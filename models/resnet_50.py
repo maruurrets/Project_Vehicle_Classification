@@ -106,8 +106,8 @@ def create_model(
         #tf.keras.applications.resnet50.ResNet50(include_top=True, weights='imagenet', input_tensor=None, input_shape=None, pooling=None, classes=1000, **kwargs)
         base_model = keras.applications.resnet50.ResNet50(include_top=False, weights=weights, pooling='avg', input_shape=input_shape)
         base_model.trainable = False
-        
-        x=base_model(x)
+
+        x=base_model(x, training=False)
         
         # Add a single dropout layer for regularization, use
         # keras.layers.Dropout()
@@ -119,7 +119,7 @@ def create_model(
         # Assign it to `outputs` variable
         # TODO
         #outputs = None
-        x2 = keras.layers.Dense(classes, kernel_regularizer='l2', activation='softmax')
+        x2 = keras.layers.Dense(classes, kernel_regularizer=regularizers.l2(0.0001), activation='softmax')
         outputs = x2(x)
 
         # Now you have all the layers in place, create a new model
@@ -134,6 +134,6 @@ def create_model(
         # Assign it to `model` variable
         # TODO
         model = None
-        #model=keras.Model.load_weights(weights) 
+        model=keras.models.load_model(weights) 
 
     return model

@@ -1,5 +1,7 @@
 import os
 import yaml
+import keras
+
 
 
 def validate_config(config):
@@ -143,5 +145,22 @@ def predict_from_folder(folder, model, input_size, class_names):
     # TODO
     predictions = None
     labels = None
+
+    predictions=[]
+    labels=[]
+    for dirpath, _, files in os.walk(folder):
+        for filename in files:
+            fname=os.path.join(dirpath, filename)
+            img = tf.keras.utils.load_img(fname,target_size=input_size)
+            img_array = img_to_array(img)
+            img_array = tf.expand_dims(img_array,axis=0)
+            pred=model.predict(img_array)
+            pred=np.argmax(pred)
+            predictions.append(class_names[pred])
+            vv=dirpath.split('/')
+            vv=vv[-1]
+            labels.append(vv)
+
+    keras.utils.load_img()
 
     return predictions, labels
