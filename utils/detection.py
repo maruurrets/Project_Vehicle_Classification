@@ -2,16 +2,6 @@ from detectron2 import model_zoo
 from detectron2.config import get_cfg
 from detectron2.engine.defaults import DefaultPredictor
 
-import numpy as np
-import os, json, cv2, random
-from google.colab.patches import cv2_imshow
-
-from detectron2 import model_zoo
-from detectron2.engine import DefaultPredictor
-from detectron2.config import get_cfg
-from detectron2.utils.visualizer import Visualizer
-from detectron2.data import MetadataCatalog, DatasetCatalog
-
 # The chosen detector model is "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"
 # because this particular model has a good balance between accuracy and speed.
 # You can check the following Colab notebook with examples on how to run
@@ -44,7 +34,7 @@ except:
 def get_vehicle_coordinates(img):
     """
     This function will run an object detector (loaded in DET_MODEL model
-    variable) over the the image, get the vehicle position in the picture
+    variable) over the image, get the vehicle position in the picture
     and return it.
 
     Many things should be taken into account to make it work:
@@ -74,28 +64,36 @@ def get_vehicle_coordinates(img):
     box_coordinates = None
 
     outputs = DET_MODEL(img)
+    classes = outputs["instances"].pred_classes.cpu().numpy()
+    boxes = outputs["instances"].pred_boxes.tensor.cpu().numpy()
 
-    interest_classes=[2,7]
-    classes=outputs["instances"].pred_classes.cpu().numpy()
-    boxes=outputs["instances"].pred_boxes.tensor.cpu().numpy()
-    print(classes)
-    print(boxes)
+    #classes = outputs["instances"].predict_classes().numpy()
+    #boxes = outputs["instances"].predict_boxes.tensor().numpy()
 
-    
- #select boxes of interest_clases
-    n=classes.shape[0]
-    interest_boxes=[]
-    for i in range(n):
-        if classes[i] in interest_classes:
-            interest_boxes.append(boxes[i,:])
-    
-    interest_images=[]
-    for bbox in interest_boxes:
-        x0,y0,x1,y1=bbox.astype(int)
-        area=(y1-y0)*(x1-x0)
-        
-        #print(x0,y0,x1,y1)
-        interest_image= img[y0:y1, x0:x1,:]
-        interest_images.append(interest_image)
+    if len(classes) != 0 and len(boxes) !=0:
+        index = -1
+        box_area_list = []
+        coordinates_list = []
+        for class_num in classes:
+            index += 1
+            if class_num == 2 or class_num == 7:
+                #[left, top, right, bottom]
+                x1 = int(boxes[index][0])
+                y1 = int(boxes[index][1])
+                x2 = int(boxes[index][2])
+                y2 = int(boxes[index][3])
+                box_area_list.append(abs(x2-x1)* abs(y2-y1))
+                coordinates_list.append((x1,y1,x2,y2))
+                max_area_index = box_area_list.index(max(box_area_list))
+                box_coordinates = coordinates_list[max_area_index]
+            else:
+                h = img.shape[0]
+                w = img.shape[1]
+                box_coordinates = [0,0,w,h]
+    else:
+        h = img.shape[0]
+        w = img.shape[1]
+        #coordinates that cover the full image, i.e. [0, 0, width, height]
+        box_coordinates = [0,0,w,h]
 
     return box_coordinates
