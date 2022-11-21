@@ -11,8 +11,12 @@ same directory structure with its subfolders but with new images.
 import argparse
 import utils
 import os
+import tensorflow as tf
 from tensorflow import keras
 from utils import detection
+
+from keras.preprocessing.image import load_img
+from keras.preprocessing.image import img_to_array
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Train your model.")
@@ -67,9 +71,9 @@ def main(data_folder, output_data_folder):
     for dirpath, _, files in os.walk(data_folder):
 
         for filename in files:
-            file= os.path.join(dirpath, filename)
-            img=keras.utils.load_img(file)
-            img_array=keras.utils.img_to_array(img)
+            fname= os.path.join(dirpath, filename)
+            img=tf.keras.utils.load_img(fname)
+            img_array= img_to_array(img)
             box=detection.get_vehicle_coordinates(img_array)
             try:
                 img_cropped=img_array[box[1]:box[3], box[0]:box[2]]
@@ -80,7 +84,6 @@ def main(data_folder, output_data_folder):
             os.makedirs(output_folder, exist_ok=True)
             output_file = os.path.join(output_folder, filename)
             keras.utils.save_img(output_file, img_out)
-
 
     
 if __name__ == "__main__":

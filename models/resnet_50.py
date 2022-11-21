@@ -105,6 +105,11 @@ def create_model(
         # TODO
         #tf.keras.applications.resnet50.ResNet50(include_top=True, weights='imagenet', input_tensor=None, input_shape=None, pooling=None, classes=1000, **kwargs)
         base_model = keras.applications.resnet50.ResNet50(include_top=False, weights=weights, pooling='avg', input_shape=input_shape)
+        
+        #unfreezing the last 30 layers
+        for layer in base_model.layers[-30:]:
+            layer.trainable = True
+        
         base_model.trainable = False
 
         x=base_model(x, training=False)

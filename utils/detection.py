@@ -67,9 +67,6 @@ def get_vehicle_coordinates(img):
     classes = outputs["instances"].pred_classes.cpu().numpy()
     boxes = outputs["instances"].pred_boxes.tensor.cpu().numpy()
 
-    #classes = outputs["instances"].predict_classes().numpy()
-    #boxes = outputs["instances"].predict_boxes.tensor().numpy()
-
     if len(classes) != 0 and len(boxes) !=0:
         index = -1
         box_area_list = []
@@ -84,6 +81,7 @@ def get_vehicle_coordinates(img):
                 y2 = int(boxes[index][3])
                 box_area_list.append(abs(x2-x1)* abs(y2-y1))
                 coordinates_list.append((x1,y1,x2,y2))
+                #select de bigger car/truck
                 max_area_index = box_area_list.index(max(box_area_list))
                 box_coordinates = coordinates_list[max_area_index]
             else:
