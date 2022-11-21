@@ -6,6 +6,7 @@ So I ran another experiment with the same configuration yml file of my last expe
 ![](./report_images/epoch_accuracy.png)
 ![](./report_images/epoch_loss.png)
 
-I made another experiment training with imagenet weights and defreezing the las 30 layer of the base model, but the results were very similar.
+The result of accuracy in test dataset was of 0.4844.
 
+I made another experiment training with imagenet weights and defreezing the las 30 layer of the base model, but the results were very similar.
 

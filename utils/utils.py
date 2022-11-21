@@ -161,8 +161,8 @@ def predict_from_folder(folder, model, input_size, class_names):
             pred=model.predict(img_array)
             pred=np.argmax(pred)
             predictions.append(class_names[pred])
-            vv=dirpath.split('/')
-            vv=vv[-1]
-            labels.append(vv)
+            vector=dirpath.split('/')
+            vector=vector[-1]
+            labels.append(vector)
 
     return predictions, labels
